@@ -1,1 +1,5 @@
 test.py
+scraped_content/*
+changes/*
+visited_links.csv
+__pycache__/*

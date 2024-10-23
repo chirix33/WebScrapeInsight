@@ -21,6 +21,8 @@ These instructions will help you set up and run **WebScrapeInsight** on your loc
   - `requests`
   - `beautifulsoup4`
   - `python-dotenv`
+  - `numpy`
+  - `scapy`
 
 ### Installation
 
@@ -35,7 +37,7 @@ These instructions will help you set up and run **WebScrapeInsight** on your loc
     PROXY_USERNAME=your_proxy_username
     PROXY_PASSWORD=your_proxy_password
 
-3.  python scrape.py
+3.  python main.py
 
 
 Let me know if you need help setting this up or if you have any other questions!

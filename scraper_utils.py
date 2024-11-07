@@ -32,9 +32,10 @@ def compare_and_save(link, new_content):
         os.makedirs(CHANGES_DIR)
 
     if os.path.exists(filepath):
-        with open(filepath, "r") as file:
+        with open(filepath, "r", encoding="utf-8") as file:
             old_content = file.read()
             if old_content != meaningful_text:
+                print(f"Changes detected in {link}. Saving changes to {changes_filepath}")
                 changes = list(unified_diff(
                     old_content.splitlines(),
                     meaningful_text.splitlines(),
@@ -42,8 +43,8 @@ def compare_and_save(link, new_content):
                     tofile='New Content',
                     lineterm=''
                 ))
-                with open(changes_filepath, "w") as change_file:
+                with open(changes_filepath, "w", encoding="utf-8") as change_file:
                     change_file.write("\n".join(changes))
 
-    with open(filepath, "w") as file:
+    with open(filepath, "w", encoding="utf-8") as file:
         file.write(meaningful_text)

@@ -10,6 +10,7 @@ import os
 # Crawler Configuration
 DEPTH_LIMIT = 1  # Will be updated by the user input
 discovered_links = set()
+depth_list = []
 
 # Add URLs to CSV
 def save_to_csv(domain, url, parent_url):
@@ -31,8 +32,13 @@ def scrape_links(url, depth, parent_url=None):
 
     headers = get_headers()
     proxy = {"http": get_proxy(), "https": get_proxy()}
+    
+    if depth + 1 not in depth_list:
+        depth_list.append(depth + 1)
+        print(f"# DEPTH: {depth + 1} \n")
 
     try:
+        print(f"Scraping {url} from {parent_url}")
         response = requests.get(url, headers=headers)  # You can add `proxies=proxy` for proxy handling
         response.raise_for_status()
         html_content = response.text
@@ -48,10 +54,13 @@ def scrape_links(url, depth, parent_url=None):
         for link in all_links:
             href = link.get('href')
             if href:
+                # Ignore anchor links
                 if href.startswith('#'):
                     continue
                 full_url = urljoin(url, href)
                 parsed_full_url = urlparse(full_url)
+
+                # Check if the link is from the same domain and not already discovered
                 if parsed_full_url.netloc == urlparse(url).netloc and full_url not in discovered_links:
                     scrape_links(full_url, depth + 1, url)
     except (requests.exceptions.RequestException, Exception) as e:

@@ -35,7 +35,7 @@ def compare_and_save(link, new_content):
         with open(filepath, "r", encoding="utf-8") as file:
             old_content = file.read()
             if old_content != meaningful_text:
-                print(f"Changes detected in {link}. Saving changes to {changes_filepath}")
+                print(f"# Changes detected in {link}. Saving changes to {changes_filepath}\n")
                 changes = list(unified_diff(
                     old_content.splitlines(),
                     meaningful_text.splitlines(),

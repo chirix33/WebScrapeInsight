@@ -1,7 +1,10 @@
 .env
-test.py
+/test.py
+scraped_content/
 scraped_content/*
+changes/
 changes/*
 visited_links.csv
 __pycache__/*
 temp_files/*
+temp_files/

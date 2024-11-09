@@ -1,6 +1,6 @@
 # WebScrapeInsight
 
-**WebScrapeInsight** is a Python-based web scraper designed to capture and compare changes on a website over time. It utilizes custom headers and proxy settings to avoid blocks, and allows the user to specify the depth of the scraping. The tool also saves discovered URLs, stores retrieved content, and keeps track of content differences between scrapes.
+**WebScrapeInsight** is a Web scraper designed to capture and compare changes on a website over time. It utilizes custom headers and proxy settings to avoid blocks, and allows the user to specify the depth of the scraping. The tool also saves discovered URLs, stores retrieved content, and keeps track of content differences between scrapes.
 
 ## Features
 

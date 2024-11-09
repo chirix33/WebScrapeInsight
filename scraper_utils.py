@@ -38,7 +38,7 @@ def extract_text_from_pdf(pdf_url):
     return text
 
 # Save content and generate changes
-def compare_and_save(link, new_content, is_pdf=False):
+def compare_and_save(link, new_content, is_pdf = False, is_excel = False):
     if is_pdf:
         meaningful_text = extract_text_from_pdf(link)
     else:

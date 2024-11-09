@@ -44,7 +44,7 @@ def scrape_links(url, depth, parent_url = None, is_pdf = False):
         response.raise_for_status()
         html_content = response.text
         # Save and compare content
-        compare_and_save(url, html_content)
+        compare_and_save(url, html_content, is_pdf)
         save_to_csv(urlparse(url).netloc, url, parent_url)
 
         # Find all the links on the page

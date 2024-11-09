@@ -3,6 +3,8 @@ import hashlib
 from bs4 import BeautifulSoup
 import spacy
 from difflib import unified_diff
+import pymupdf
+import requests
 
 # Load SpaCy model
 nlp = spacy.load("en_core_web_md")
@@ -18,9 +20,30 @@ def extract_meaningful_text(html):
     doc = nlp(text)
     return "\n\n".join([sent.text.strip() for sent in doc.sents])
 
+# Extract text from PDF
+def extract_text_from_pdf(pdf_url):
+    response = requests.get(pdf_url)
+    temp_file_path = "temp_files/"+hashlib.md5(pdf_url.encode()).hexdigest()+".pdf"
+    
+    with open(temp_file_path, "wb") as file:
+        file.write(response.content)
+    
+    doc = pymupdf.open(temp_file_path)
+    text = ""
+    for page in doc:
+        text += page.get_text().encode("utf8")
+    doc.close()
+    os.remove(temp_file_path)
+
+    return text
+
 # Save content and generate changes
-def compare_and_save(link, new_content):
-    meaningful_text = extract_meaningful_text(new_content)
+def compare_and_save(link, new_content, is_pdf=False):
+    if is_pdf:
+        meaningful_text = extract_text_from_pdf(link)
+    else:
+        meaningful_text = extract_meaningful_text(new_content)
+        
     hashed_filename = hashlib.md5(link.encode()).hexdigest() + ".txt"
     filepath = os.path.join(BASE_DIR, hashed_filename)
     changes_filepath = os.path.join(CHANGES_DIR, hashed_filename + "_changes")

@@ -9,6 +9,7 @@ import os
 
 # Crawler Configuration
 DEPTH_LIMIT = 1  # Will be updated by the user input
+PDF_EXTENSION = ".pdf"
 discovered_links = set()
 depth_list = []
 
@@ -24,7 +25,7 @@ def save_to_csv(domain, url, parent_url):
         writer.writerow({"Domain": domain, "URL": url, "Parent URL": parent_url})
 
 # Scrape Links Recursively
-def scrape_links(url, depth, parent_url=None):
+def scrape_links(url, depth, parent_url = None, is_pdf = False):
     if depth > DEPTH_LIMIT or url in discovered_links:
         return
 
@@ -33,8 +34,8 @@ def scrape_links(url, depth, parent_url=None):
     headers = get_headers()
     proxy = {"http": get_proxy(), "https": get_proxy()}
     
-    if depth + 1 not in depth_list:
-        depth_list.append(depth + 1)
+    if depth not in depth_list:
+        depth_list.append(depth)
         print(f"# DEPTH: {depth + 1} \n")
 
     try:
@@ -62,7 +63,12 @@ def scrape_links(url, depth, parent_url=None):
 
                 # Check if the link is from the same domain and not already discovered
                 if parsed_full_url.netloc == urlparse(url).netloc and full_url not in discovered_links:
-                    scrape_links(full_url, depth + 1, url)
+                    # Check if the link is a PDF
+                    if full_url.endswith(PDF_EXTENSION):
+                        print(f"# Found PDF: {full_url}")
+                        scrape_links(full_url, depth + 1, url, is_pdf = True)
+                    else:
+                        scrape_links(full_url, depth + 1, url)
     except (requests.exceptions.RequestException, Exception) as e:
         print(f"Error accessing {url}: {e}")
         print("Sleeping for 10 seconds then retrying...")

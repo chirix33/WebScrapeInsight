@@ -8,3 +8,6 @@ if __name__ == "__main__":
 
     scrape_links(domain, 0)
     print("Scraping completed!")
+
+    print("What do you want to ask? ")
+    question = input("> ")

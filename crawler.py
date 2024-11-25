@@ -72,7 +72,6 @@ def scrape_links(url, depth, parent_url = None, is_pdf = False, is_excel = False
                     # Check if the link is an Excel file
                     elif full_url.endswith(tuple(EXCEL_EXTENSIONS)):
                         print(f"# Found Excel: {full_url}")
-                        compare_and_save(full_url, None, is_pdf = True)
                         scrape_links(full_url, depth + 1, url, is_excel = True)
 
 

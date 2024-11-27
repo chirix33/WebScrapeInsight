@@ -24,7 +24,6 @@ def get_body_content(html):
     else:
         return ""
     
-
 def clean_html(html):
     soup = BeautifulSoup(html, 'lxml')
 
@@ -34,7 +33,6 @@ def clean_html(html):
     cleaned_content = soup.get_text(separator="\n")
     cleaned_content = "\n".join(line.strip() for line in cleaned_content.splitlines() if line.strip())
     return cleaned_content
-
 
 def split_content(content, max_length=6000):
     return [

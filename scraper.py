@@ -1,6 +1,10 @@
 import selenium.webdriver as webdriver
 from selenium.webdriver.chrome.service import Service
 from bs4 import BeautifulSoup
+from parse import parse_with_ollama
+
+DIR = "temp_files/source_code1.txt"
+
 
 def scrape_link(link):
     chrome_driver_path = "./chromedriver.exe"
@@ -40,11 +44,11 @@ def split_content(content, max_length=6000):
     ]
 
 
-DIR = "temp_files/source_code.txt"
 print("Scraping...")
-result = scrape_link("https://greatwaysinc.com/")
+result = scrape_link("https://blog.val.town/blog/building-a-code-writing-robot")
 content = get_body_content(result)
 cleaned_content = clean_html(content)
+# robust_content = parse_with_ollama(split_content(cleaned_content))
 
 with open(DIR, "w", encoding="utf-8") as file:
     file.write(cleaned_content)

@@ -24,8 +24,12 @@ def save_to_csv(domain, url, parent_url):
         if os.stat("visited_links.csv").st_size == 0:
             writer.writeheader()
 
-        writer.writerow({"Domain": domain, "URL": url, "Parent URL": parent_url, "Date Visited": time.strftime("%Y-%m-%d %H:%M:%S")})
-
+        # If the date is already in the CSV, don't write it again
+        for row in csv.reader(csvfile):
+            if row[0] == domain and row[1] == url and row[2] == parent_url:
+                return
+            writer.writerow({"Domain": domain, "URL": url, "Parent URL": parent_url, "Date Visited": time.strftime("%Y-%m-%d %H:%M:%S")})
+        
 # Scrape Links Recursively
 def scrape_links(url, depth, parent_url = None, is_pdf = False, is_excel = False):
     if depth > DEPTH_LIMIT or url in discovered_links:

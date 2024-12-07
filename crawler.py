@@ -20,15 +20,17 @@ def save_to_csv(domain, url, parent_url):
     with open("visited_links.csv", "a", newline="") as csvfile:
         fieldnames = ["Domain", "URL", "Parent URL", "Date Visited"]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
+            
         if os.stat("visited_links.csv").st_size == 0:
             writer.writeheader()
-
-        # If the date is already in the CSV, don't write it again
-        for row in csv.reader(csvfile):
-            if row[0] == domain and row[1] == url and row[2] == parent_url:
-                return
-            writer.writerow({"Domain": domain, "URL": url, "Parent URL": parent_url, "Date Visited": time.strftime("%Y-%m-%d %H:%M:%S")})
+        else:
+            # If the date is already in the CSV, don't write it again
+            for row in csv.reader(csvfile):
+                if row[0] == domain and row[1] == url and row[2] == parent_url and row[3] == time.strftime("%Y-%m-%d %H:%M:%S"):
+                    return  
+        if parent_url is None:
+            parent_url = "N/A"      
+        writer.writerow({"Domain": domain, "URL": url, "Parent URL": parent_url, "Date Visited": time.strftime("%Y-%m-%d %H:%M:%S")})
         
 # Scrape Links Recursively
 def scrape_links(url, depth, parent_url = None, is_pdf = False, is_excel = False):
@@ -77,8 +79,6 @@ def scrape_links(url, depth, parent_url = None, is_pdf = False, is_excel = False
                     elif full_url.endswith(tuple(EXCEL_EXTENSIONS)):
                         print(f"# Found Excel: {full_url}")
                         scrape_links(full_url, depth + 1, url, is_excel = True)
-
-
                     else:
                         scrape_links(full_url, depth + 1, url)
     except (requests.exceptions.RequestException, Exception) as e:

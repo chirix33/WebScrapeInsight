@@ -31,7 +31,7 @@ def extract_text_from_pdf(pdf_url):
     doc = pymupdf.open(temp_file_path)
     text = ""
     for page in doc:
-        text += page.get_text().encode("utf8")
+        text += page.get_text()
     doc.close()
     os.remove(temp_file_path)
 

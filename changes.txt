@@ -1,0 +1,11 @@
+--- Old Content
++++ New Content
+@@ -17,7 +17,7 @@
+ My Tech Stack includes:
+ React, NextJS, Node.js, Express, PHP, and PostgreSQL.
+ 
+-I love annime!
++I love anime!
+ 
+ Experience
+ ACM Illinois Tech

@@ -1,10 +1,12 @@
 import selenium.webdriver as webdriver
 from selenium.webdriver.chrome.service import Service
 from bs4 import BeautifulSoup
-from parse import parse_with_ollama
+import spacy
+from difflib import unified_diff
 
-DIR = "temp_files/structured_content_1.txt"
-
+DIR = "content.txt"
+CHANGES = "changes.txt"
+nlp = spacy.load("en_core_web_md")
 
 def scrape_link(link):
     chrome_driver_path = "./chromedriver.exe"
@@ -43,15 +45,32 @@ def split_content(content, max_length=6000):
         content[i: i + max_length] for i in range(0, len(content), max_length)
     ]
 
+def extract_meaningful_text(text):
+    doc = nlp(text)
+    return "\n\n".join([sent.text.strip() for sent in doc.sents])
+
+
 
 print("Scraping...")
-result = scrape_link("https://blog.val.town/blog/building-a-code-writing-robot")
+result = scrape_link("https://chirix.netlify.app")
 content = get_body_content(result)
 cleaned_content = clean_html(content)
-robust_content = parse_with_ollama(split_content(cleaned_content))
+meaningful_text = extract_meaningful_text(cleaned_content)
 
-with open(DIR, "w", encoding="utf-8") as file:
-    file.write(robust_content)
-    file.write("\n\n")
+with open(DIR, "r", encoding="utf-8") as file:
+    old_content = file.read()
+    if old_content != meaningful_text:
+        print("Changes detected!")
+        changes = list(unified_diff(
+            old_content.splitlines(),
+            meaningful_text.splitlines(),
+            fromfile='Old Content',
+            tofile='New Content',
+            lineterm=''
+        ))
+        with open(CHANGES, "w", encoding="utf-8") as change_file:
+            change_file.write("\n".join(changes))
+    else:
+        print("No changes detected!")
 
 print("Scraping done!")

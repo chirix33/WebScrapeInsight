@@ -1,0 +1,46 @@
+Choose a Color Scheme
+Light
+Dark
+<Portfolio
+/
+>
+Bio
+Experience
+Projects
+I'm
+Ashraf
+,
+a Full Stack Software Engineer.
+
+I build web applications using modern technologies and tools.
+
+My Tech Stack includes:
+React, NextJS, Node.js, Express, PHP, and PostgreSQL.
+
+I love annime!
+
+Experience
+ACM Illinois Tech
+Nov 2024 - Present
+Web Developer (Volunteer)
+Onesolution
+Sep 2023 - Aug 2024
+Full Stack Developer
+Kwame Nkrumah University
+Sep 2022 - Aug 2023
+Junior Backend Developer
+My Resume
+Projects
+Project
+Description
+Tech Stack/Tools
+Status
+View
+Get In Touch
+chiriashraf@gmail.com
+My Resume
+LinkedIn
+GitHub
+Copyright © 2024
+Made at Illinois Tech
+🖤

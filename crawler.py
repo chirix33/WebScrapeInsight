@@ -20,21 +20,24 @@ def save_to_csv(domain, url, parent_url):
     with open("visited_links.csv", "a", newline="") as csvfile:
         fieldnames = ["Domain", "URL", "Parent URL", "Date Visited"]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            
+        
+        if parent_url is None:
+            parent_url = "N/A"
+
         if os.stat("visited_links.csv").st_size == 0:
             writer.writeheader()
         else:
-            # If the date is already in the CSV, don't write it again
-            for row in csv.reader(csvfile):
-                if row[0] == domain and row[1] == url and row[2] == parent_url and row[3] == time.strftime("%Y-%m-%d %H:%M:%S"):
-                    return  
-        if parent_url is None:
-            parent_url = "N/A"      
-        writer.writerow({"Domain": domain, "URL": url, "Parent URL": parent_url, "Date Visited": time.strftime("%Y-%m-%d %H:%M:%S")})
+            with open("visited_links.csv", "r") as readfile:
+                reader = csv.DictReader(readfile)
+                for row in reader:
+                    # If the day is already in the CSV, don't write it again
+                    if row["Domain"] == domain and row["URL"] == url and row["Parent URL"] == parent_url and row["Date Visited"] == time.strftime("%Y-%m-%d"):
+                        return  
+        writer.writerow({"Domain": domain, "URL": url, "Parent URL": parent_url, "Date Visited": time.strftime("%Y-%m-%d")})
         
 # Scrape Links Recursively
 def scrape_links(url, depth, parent_url = None, is_pdf = False, is_excel = False):
-    if depth > DEPTH_LIMIT or url in discovered_links:
+    if depth + 1 > DEPTH_LIMIT or url in discovered_links:
         return
 
     discovered_links.add(url)
@@ -47,6 +50,11 @@ def scrape_links(url, depth, parent_url = None, is_pdf = False, is_excel = False
 
     try:
         print(f"Scraping {url} from {parent_url}")
+        if is_pdf:
+            print(f"# Found PDF: {url}")
+        elif is_excel:
+            print(f"# Found Excel: {url}")
+
         response = requests.get(url, headers=headers)  # You can add `proxies=proxy` for proxy handling
         response.raise_for_status()
         html_content = response.text
@@ -72,12 +80,10 @@ def scrape_links(url, depth, parent_url = None, is_pdf = False, is_excel = False
                 if parsed_full_url.netloc == urlparse(url).netloc and full_url not in discovered_links:
                     # Check if the link is a PDF
                     if full_url.endswith(PDF_EXTENSION):
-                        print(f"# Found PDF: {full_url}")
                         scrape_links(full_url, depth + 1, url, is_pdf = True)
 
                     # Check if the link is an Excel file
                     elif full_url.endswith(tuple(EXCEL_EXTENSIONS)):
-                        print(f"# Found Excel: {full_url}")
                         scrape_links(full_url, depth + 1, url, is_excel = True)
                     else:
                         scrape_links(full_url, depth + 1, url)

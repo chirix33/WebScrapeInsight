@@ -50,7 +50,6 @@ def extract_meaningful_text(text):
     return "\n\n".join([sent.text.strip() for sent in doc.sents])
 
 
-
 print("Scraping...")
 result = scrape_link("https://chirix.netlify.app")
 content = get_body_content(result)

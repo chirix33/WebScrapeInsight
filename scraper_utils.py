@@ -14,9 +14,22 @@ BASE_DIR = "scraped_content"
 CHANGES_DIR = "changes"
 
 # Extract Meaningful Text from HTML
-def extract_meaningful_text(html):
+def get_body_content(html):
     soup = BeautifulSoup(html, 'lxml')
-    text = soup.get_text()
+    body = soup.body
+    if body:
+        return str(body)
+    else:
+        return ""
+    
+def extract_meaningful_text(html):
+    body = get_body_content(html)
+    soup = BeautifulSoup(body, 'lxml')
+    for script in soup(["script", "style"]):
+        script.extract()
+
+    text = soup.get_text(separator="\n")
+    text = "\n".join(line.strip() for line in text.splitlines() if line.strip())
     doc = nlp(text)
     return "\n\n".join([sent.text.strip() for sent in doc.sents])
 

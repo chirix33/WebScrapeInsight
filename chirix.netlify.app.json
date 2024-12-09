@@ -1,14 +1,14 @@
 {
     "https://chirix.netlify.app" : {
         "parent": "",
-        "date": "2024-07-01",
         "content": "content.txt",
-        "changes": "changes.txt"
+        "changes": "changes.txt",
+        "scrape_date": "2024-07-01"
     },
     "https://chirix.netlify.app/ashraf_resume.pdf" : {
         "parent": "https://chirix.netlify.app",
-        "date": "2024-07-01",
         "content": "content.txt",
-        "changes": ""
+        "changes": "",
+        "scrape_date": "2024-07-01"
     }
 }

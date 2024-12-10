@@ -7,8 +7,6 @@ from scraper_utils import compare_and_save
 from config import get_headers
 import os
 
-# Crawler Configuration
-DEPTH_LIMIT = 1  # Will be updated by the user input
 PDF_EXTENSION = ".pdf"
 EXCEL_EXTENSIONS = [".xlsx", ".xls"]
 
@@ -30,14 +28,14 @@ def save_to_csv(domain, url, parent_url):
             with open("visited_links.csv", "r") as readfile:
                 reader = csv.DictReader(readfile)
                 for row in reader:
-                    # If the day is already in the CSV, don't write it again
+                    # Skip if entry already exists for the day
                     if row["Domain"] == domain and row["URL"] == url and row["Parent URL"] == parent_url and row["Date Visited"] == time.strftime("%Y-%m-%d"):
                         return  
         writer.writerow({"Domain": domain, "URL": url, "Parent URL": parent_url, "Date Visited": time.strftime("%Y-%m-%d")})
 
 # Scrape Links Recursively
-def scrape_links(url, depth, parent_url = None, is_pdf = False, is_excel = False):
-    if depth + 1 > DEPTH_LIMIT or url in discovered_links:
+def scrape_links(url, depth, parent_url=None, is_pdf=False, is_excel=False, DEPTH_LIMIT=1):
+    if depth >= DEPTH_LIMIT or url in discovered_links:
         return
 
     discovered_links.add(url)
@@ -55,7 +53,7 @@ def scrape_links(url, depth, parent_url = None, is_pdf = False, is_excel = False
         elif is_excel:
             print(f"# Found Excel: {url}")
 
-        response = requests.get(url, headers=headers)  # You can add `proxies=proxy` for proxy handling
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         html_content = response.text
         # Save and compare content
@@ -76,19 +74,18 @@ def scrape_links(url, depth, parent_url = None, is_pdf = False, is_excel = False
                 full_url = urljoin(url, href)
                 parsed_full_url = urlparse(full_url)
 
-                # Check if the link is from the same domain and not already discovered
-                if parsed_full_url.netloc == urlparse(url).netloc and full_url not in discovered_links:
-                    # Check if the link is a PDF
+                # Check if the link is from the same domain or localhost
+                if (parsed_full_url.netloc == urlparse(url).netloc or 
+                    parsed_full_url.netloc in ["localhost", "127.0.0.1"]) and full_url not in discovered_links:
+                    # Check for file types
                     if full_url.endswith(PDF_EXTENSION):
-                        scrape_links(full_url, depth + 1, url, is_pdf = True)
-
-                    # Check if the link is an Excel file
+                        scrape_links(full_url, depth + 1, url, is_pdf=True, DEPTH_LIMIT=DEPTH_LIMIT)
                     elif full_url.endswith(tuple(EXCEL_EXTENSIONS)):
-                        scrape_links(full_url, depth + 1, url, is_excel = True)
+                        scrape_links(full_url, depth + 1, url, is_excel=True, DEPTH_LIMIT=DEPTH_LIMIT)
                     else:
-                        scrape_links(full_url, depth + 1, url)
+                        scrape_links(full_url, depth + 1, url, DEPTH_LIMIT=DEPTH_LIMIT)
     except (requests.exceptions.RequestException, Exception) as e:
         print(f"Error accessing {url}: {e}")
         print("Sleeping for 10 seconds then retrying...")
         time.sleep(10)
-        scrape_links(url, depth, parent_url)
+        scrape_links(url, depth, parent_url, DEPTH_LIMIT=DEPTH_LIMIT)

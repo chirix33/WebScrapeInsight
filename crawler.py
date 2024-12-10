@@ -1,6 +1,5 @@
 import requests
 import csv
-import json
 import time
 from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
@@ -36,51 +35,6 @@ def save_to_csv(domain, url, parent_url):
                         return  
         writer.writerow({"Domain": domain, "URL": url, "Parent URL": parent_url, "Date Visited": time.strftime("%Y-%m-%d")})
 
-
-def get_json_data(domain):
-    domain = domain + ".json"
-    with open(domain, "r") as readJSON:
-        return json.load(readJSON)
-
-def update_scrape_date(domain, url):
-    data = get_json_data(domain)
-    domain = domain + ".json"
-    try:
-        if url in data:
-            data[url]["scrape_date"] = time.strftime("%Y-%m-%d")
-            with open(domain, "w", encoding="utf-8") as writeFile:
-                json.dump(data, writeFile, indent=4)
-    except(Exception) as e:
-        print(f'Error updating scrape date of {domain}.json: {e}')
-        return False
-    
-    return True
-
-def is_scrape_today(domain, url, updateDate = False):
-    domain = domain + ".json"
-    with open(domain, "r", encoding="utf-8") as readJSON:
-        data = json.load(readJSON)
-        if url in data:
-            if data[url]["scrape_date"] == time.strftime("%Y-%m-%d"):
-                if updateDate:
-                    update_scrape_date(domain, url)
-                return True
-    return False
-        
-def update_scrape_record(domain, url, parent_url, content, changes = "N/A"):
-    domain = domain + ".json"
-    with open(domain, "r", encoding="utf-8") as readJSON:
-        data = json.load(readJSON)
-        data[url] = {
-            "parent": parent_url,
-            "content": content,
-            "changes": changes,
-            "scrape_date": time.strftime("%Y-%m-%d")
-        }
-        with open(domain, "w") as writeFile:
-            json.dump(data, writeFile, indent=4)
-
-
 # Scrape Links Recursively
 def scrape_links(url, depth, parent_url = None, is_pdf = False, is_excel = False):
     if depth + 1 > DEPTH_LIMIT or url in discovered_links:
@@ -105,7 +59,7 @@ def scrape_links(url, depth, parent_url = None, is_pdf = False, is_excel = False
         response.raise_for_status()
         html_content = response.text
         # Save and compare content
-        compare_and_save(url, html_content, is_pdf, is_excel)
+        compare_and_save(url, parent_url, html_content, is_pdf, is_excel)
         save_to_csv(urlparse(url).netloc, url, parent_url)
 
         # Find all the links on the page

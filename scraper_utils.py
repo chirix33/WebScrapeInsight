@@ -37,11 +37,6 @@ def extract_meaningful_text(html):
     doc = nlp(text)
     return "\n".join([sent.text.strip() for sent in doc.sents if sent.text.strip()])
 
-# def extract_meaningful_text(html):
-#     soup = BeautifulSoup(html, 'lxml')
-#     text = soup.get_text()
-#     doc = nlp(text)
-#     return "\n\n".join([sent.text.strip() for sent in doc.sents])
 
 # Extract text from PDF
 def extract_text_from_pdf(pdf_url):

@@ -60,7 +60,10 @@ def compare_and_save(link, parent_url, new_content, is_pdf = False, is_excel = F
         meaningful_text = extract_text_from_pdf(link)
     else:
         meaningful_text = extract_meaningful_text(new_content)
-        
+
+    # Calculate the hash of the new content
+    new_content_hash = hashlib.md5(meaningful_text.encode()).hexdigest()
+
     hashed_filename = hashlib.md5(link.encode()).hexdigest() + ".txt"
     filepath = os.path.join(BASE_DIR, hashed_filename)
     changes_filepath = os.path.join(CHANGES_DIR, hashed_filename + "_changes")
@@ -75,7 +78,10 @@ def compare_and_save(link, parent_url, new_content, is_pdf = False, is_excel = F
     if os.path.exists(filepath):
         with open(filepath, "r", encoding="utf-8") as file:
             old_content = file.read()
-            if old_content != meaningful_text:
+            # Calculate the hash of the old content
+            old_content_hash = hashlib.md5(old_content.encode()).hexdigest()
+
+            if old_content_hash != new_content_hash:
                 print(f"# Changes detected in {link}. Saving changes to {changes_filepath}\n")
                 changes = list(unified_diff(
                     old_content.splitlines(),

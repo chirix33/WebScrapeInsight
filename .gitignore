@@ -8,3 +8,4 @@ visited_links.csv
 __pycache__/*
 temp_files/*
 temp_files/
+json_files

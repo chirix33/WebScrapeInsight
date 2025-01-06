@@ -1,15 +1,3 @@
-# WebScrapeInsight
-
-**WebScrapeInsight** is a Web scraper designed to capture and compare changes on a website over time. It utilizes custom headers and proxy settings to avoid blocks, and allows the user to specify the depth of the scraping. The tool also saves discovered URLs, stores retrieved content, and keeps track of content differences between scrapes.
-
-## Features
-
-- Scrapes a website recursively with user-specified depth.
-- Supports custom user agents and proxy settings.
-- Compares and stores content changes in separate files.
-- Logs discovered links, including parent-child relationships.
-- Uses retry mechanism with delays to handle failed requests.
-
 ## Getting Started
 
 These instructions will help you set up and run **WebScrapeInsight** on your local machine.
@@ -22,22 +10,57 @@ These instructions will help you set up and run **WebScrapeInsight** on your loc
   - `beautifulsoup4`
   - `python-dotenv`
   - `numpy`
-  - `scapy`
+  - `spacy`
+  - `pymupdf`
 
 ### Installation
 
-1.  Clone the repository:
+1. Clone the repository:
     ```sh
     git clone https://github.com/yourusername/WebScrapeInsight.git
     cd WebScrapeInsight
+    ```
 
-2.  Create a .env file in your root folder and save the proxy settings:
+2. Install the required Python libraries:
+    ```sh
+    pip install -r requirements.txt
+    ```
+
+3. Create a [`.env`](.env ) file in your root folder and save the proxy settings (optional):
     ```sh
     PROXY_HOST=your_proxy_host:your_proxy_port
     PROXY_USERNAME=your_proxy_username
     PROXY_PASSWORD=your_proxy_password
+    ```
 
-3.  python main.py
+### Usage
 
+1. Run the main script:
+    ```sh
+    python main.py
+    ```
 
-Let me know if you need help setting this up or if you have any other questions!
+2. Follow the prompts to enter the domain and the depth limit for scraping.
+
+### Project Structure
+
+- [`config.py`](config.py ): Contains functions to get proxy settings and headers.
+- [`crawler.py`](crawler.py ): Contains the main scraping logic, including recursive link scraping and saving URLs to CSV.
+- [`scraper_utils.py`](scraper_utils.py ): Contains utility functions for extracting meaningful text, comparing and saving content, and updating scrape records.
+- [`main.py`](main.py ): Entry point of the application, prompts user for input and starts the scraping process.
+
+### Data Storage
+
+- **Scraped Content**: Stored in text files within the `scraped_data` directory.
+- **Changes**: Stored in separate text files within the [changes](http://_vscodecontentref_/1) directory.
+- **Discovered URLs**: Logged in CSV files within the `logs` directory.
+- **Scrape Records**: Stored in JSON files within the `json_data` directory.
+
+### Example
+
+```sh
+Type your domain:
+> example.com
+
+Enter depth:
+(Default 1)> 2

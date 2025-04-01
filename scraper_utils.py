@@ -60,12 +60,12 @@ def compare_and_save(link, parent_url, new_content, is_pdf = False, is_excel = F
     if is_pdf:
         meaningful_text = extract_text_from_pdf(link)
     else:
-        meaningful_text = extract_meaningful_text(new_content)
+        meaningful_text = get_body_content(new_content)
 
     # Calculate the hash of the new content
     new_content_hash = hashlib.md5(meaningful_text.encode()).hexdigest()
 
-    hashed_filename = hashlib.md5(link.encode()).hexdigest() + ".txt"
+    hashed_filename = hashlib.md5(link.encode()).hexdigest() + ".html"
     filepath = os.path.join(BASE_DIR, hashed_filename)
     changes_filepath = os.path.join(CHANGES_DIR, hashed_filename + "_changes")
     changes = list()
@@ -101,6 +101,52 @@ def compare_and_save(link, parent_url, new_content, is_pdf = False, is_excel = F
 
     with open(filepath, "w", encoding="utf-8") as file:
         file.write(meaningful_text)
+
+# def compare_and_save(link, parent_url, new_content, is_pdf = False, is_excel = False):
+#     if is_pdf:
+#         meaningful_text = extract_text_from_pdf(link)
+#     else:
+#         meaningful_text = extract_meaningful_text(new_content)
+
+#     # Calculate the hash of the new content
+#     new_content_hash = hashlib.md5(meaningful_text.encode()).hexdigest()
+
+#     hashed_filename = hashlib.md5(link.encode()).hexdigest() + ".txt"
+#     filepath = os.path.join(BASE_DIR, hashed_filename)
+#     changes_filepath = os.path.join(CHANGES_DIR, hashed_filename + "_changes")
+#     changes = list()
+
+#     if not os.path.exists(BASE_DIR):
+#         os.makedirs(BASE_DIR)
+
+#     if not os.path.exists(CHANGES_DIR):
+#         os.makedirs(CHANGES_DIR)
+
+#     if os.path.exists(filepath):
+#         with open(filepath, "r", encoding="utf-8") as file:
+#             old_content = file.read()
+#             # Calculate the hash of the old content
+#             old_content_hash = hashlib.md5(old_content.encode()).hexdigest()
+
+#             if old_content_hash != new_content_hash:
+#                 print(f"# Changes detected in {link}. Saving changes to {changes_filepath}\n")
+#                 changes = list(unified_diff(
+#                     old_content.splitlines(),
+#                     meaningful_text.splitlines(),
+#                     fromfile='Old Content',
+#                     tofile='New Content',
+#                     lineterm=''
+#                 ))
+#                 with open(changes_filepath, "w", encoding="utf-8") as change_file:
+#                     change_file.write("\n".join(changes))
+    
+#     if len(changes) > 0:
+#         update_scrape_record(link, link, parent_url, filepath, changes_filepath)
+#     else:
+#         update_scrape_record(link, link, parent_url, filepath)
+
+#     with open(filepath, "w", encoding="utf-8") as file:
+#         file.write(meaningful_text)
 
 # Function to Get JSON Data
 def get_json_data(domain):
@@ -163,9 +209,11 @@ def update_scrape_record(domain, url, parent_url, content, changes = "N/A"):
     # Update the record for the given URL
     data[url] = {
         "parent": parent_url,
-        "content": content,
+        "prev_html": content,
+        "new_html": content,
         "changes": changes,
-        "scrape_date": time.strftime("%Y-%m-%d")
+        "scrape_date": time.strftime("%Y-%m-%d"),
+        "status": "no_change"
     }
 
     # Write the updated data back to the file
